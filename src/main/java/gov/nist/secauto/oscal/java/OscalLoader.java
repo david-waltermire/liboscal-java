@@ -1,4 +1,4 @@
-/**
+/*
  * Portions of this software was developed by employees of the National Institute
  * of Standards and Technology (NIST), an agency of the Federal Government and is
  * being made available as a public service. Pursuant to title 17 United States
@@ -25,28 +25,6 @@
  */
 package gov.nist.secauto.oscal.java;
 
-/**
- * Portions of this software was developed by employees of the National Institute
- * of Standards and Technology (NIST), an agency of the Federal Government.
- * Pursuant to title 17 United States Code Section 105, works of NIST employees are
- * not subject to copyright protection in the United States and are considered to
- * be in the public domain. Permission to freely use, copy, modify, and distribute
- * this software and its documentation without fee is hereby granted, provided that
- * this notice and disclaimer of warranty appears in all copies.
- *
- * THE SOFTWARE IS PROVIDED 'AS IS' WITHOUT ANY WARRANTY OF ANY KIND, EITHER
- * EXPRESSED, IMPLIED, OR STATUTORY, INCLUDING, BUT NOT LIMITED TO, ANY WARRANTY
- * THAT THE SOFTWARE WILL CONFORM TO SPECIFICATIONS, ANY IMPLIED WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND FREEDOM FROM
- * INFRINGEMENT, AND ANY WARRANTY THAT THE DOCUMENTATION WILL CONFORM TO THE
- * SOFTWARE, OR ANY WARRANTY THAT THE SOFTWARE WILL BE ERROR FREE. IN NO EVENT
- * SHALL NIST BE LIABLE FOR ANY DAMAGES, INCLUDING, BUT NOT LIMITED TO, DIRECT,
- * INDIRECT, SPECIAL OR CONSEQUENTIAL DAMAGES, ARISING OUT OF, RESULTING FROM, OR
- * IN ANY WAY CONNECTED WITH THIS SOFTWARE, WHETHER OR NOT BASED UPON WARRANTY,
- * CONTRACT, TORT, OR OTHERWISE, WHETHER OR NOT INJURY WAS SUSTAINED BY PERSONS OR
- * PROPERTY OR OTHERWISE, AND WHETHER OR NOT LOSS WAS SUSTAINED FROM, OR AROSE OUT
- * OF THE RESULTS OF, OR USE OF, THE SOFTWARE OR SERVICES PROVIDED HEREUNDER.
- */
 import com.ctc.wstx.stax.WstxInputFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
@@ -63,7 +41,7 @@ import gov.nist.secauto.metaschema.binding.io.Configuration;
 import gov.nist.secauto.metaschema.binding.io.Deserializer;
 import gov.nist.secauto.metaschema.binding.io.Feature;
 import gov.nist.secauto.metaschema.binding.io.MutableConfiguration;
-import gov.nist.secauto.metaschema.binding.io.json.parser.JsonUtil;
+import gov.nist.secauto.metaschema.binding.io.json.JsonUtil;
 
 import org.codehaus.stax2.XMLEventReader2;
 import org.codehaus.stax2.XMLInputFactory2;
@@ -150,7 +128,7 @@ public class OscalLoader {
   private Class<?> detectModelJson(JsonParser parser) throws BindingException {
     Class<?> retval = null;
     try {
-      JsonUtil.readNextToken(parser, JsonToken.START_OBJECT);
+      JsonUtil.consumeAndAssert(parser, JsonToken.START_OBJECT);
       outer: while (JsonToken.FIELD_NAME.equals(parser.nextToken())) {
         String name = parser.getCurrentName();
         switch (name) {
@@ -179,9 +157,9 @@ public class OscalLoader {
     return retval;
   }
 
-  private <CLASS> Deserializer<CLASS> getDeserializer(Class<CLASS> clazz, Format format, Configuration config)
+  private Deserializer getDeserializer(Class<?> clazz, Format format, Configuration config)
       throws BindingException {
-    Deserializer<CLASS> retval = getBindingContext().newDeserializer(format, clazz, config);
+    Deserializer retval = getBindingContext().newDeserializer(format, clazz, config);
     return retval;
   }
 
@@ -212,7 +190,7 @@ public class OscalLoader {
         }
 
         MutableConfiguration config = new MutableConfiguration().enableFeature(Feature.DESERIALIZE_ROOT);
-        Deserializer<CLASS> deserializer = getDeserializer(clazz, format, config);
+        Deserializer deserializer = getDeserializer(clazz, format, config);
         CLASS retval = deserializer.deserialize(file);
         return retval;
       case INCONCLUSIVE:
