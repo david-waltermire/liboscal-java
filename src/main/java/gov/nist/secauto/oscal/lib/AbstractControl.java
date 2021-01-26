@@ -23,31 +23,28 @@
  * PROPERTY OR OTHERWISE, AND WHETHER OR NOT LOSS WAS SUSTAINED FROM, OR AROSE OUT
  * OF THE RESULTS OF, OR USE OF, THE SOFTWARE OR SERVICES PROVIDED HEREUNDER.
  */
+package gov.nist.secauto.oscal.lib;
 
-package gov.nist.secauto.oscal.java;
+import gov.nist.secauto.metaschema.binding.DeserializationHandler;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.format.DataFormatDetector;
-import com.fasterxml.jackson.core.format.DataFormatMatcher;
-import com.fasterxml.jackson.core.format.MatchStrength;
-import com.fasterxml.jackson.dataformat.xml.XmlFactory;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+public abstract class AbstractControl implements DeserializationHandler {
+  private Control parent;
 
-import java.io.IOException;
-import java.io.InputStream;
-
-public class ContentUtil {
-  private static final JsonFactory jsonFactory = new JsonFactory();
-  private static final XmlFactory xmlFactory = new XmlFactory();
-  private static final YAMLFactory yamlFactory = new YAMLFactory();
-
-  public static DataFormatMatcher detectFormat(InputStream is) throws IOException {
-
-    DataFormatDetector det = new DataFormatDetector(new JsonFactory[] { jsonFactory, yamlFactory, xmlFactory });
-    det = det.withMinimalMatch(MatchStrength.WEAK_MATCH).withOptimalMatch(MatchStrength.SOLID_MATCH);
-
-    DataFormatMatcher matcher = det.findFormat(is);
-    return matcher;
+  protected Control getParent() {
+    return parent;
   }
 
+  protected void setParent(Control parent) {
+    this.parent = parent;
+  }
+
+  @Override
+  public void beforeDeserialize(Object parent) { }
+
+  @Override
+  public void afterDeserialize(Object parent) {
+    if (parent instanceof Control) {
+      this.parent = (Control)parent;
+    }
+  }
 }
